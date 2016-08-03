@@ -175,13 +175,13 @@ case ${ARCH} in
         # $DOWNLOAD_FILE http://snapshots.linaro.org/ubuntu/images/kvm/$hwpack/$BUILD_NUMBER_HOST/nbd-${hwpack}.ko.gz
         # $DOWNLOAD_FILE http://releases.linaro.org/components/kernel/uefi-linaro/15.12/release/qemu64/QEMU_EFI.fd
         # xz -d kvm-arm64.qcow2.xz
-        [ ! -e $DIR/nbd.ko ] && $DOWNLOAD_FILE  -P $DIR http://10.192.208.75/lars_logs/b59118/images/ls1012ardb/nbd.ko
+        [ ! -e '$DIR/nbd.ko' ] && $DOWNLOAD_FILE  -P $DIR http://10.192.208.75/lars_logs/b59118/images/ls1012ardb/nbd.ko
 
 		# [-e $DIR/nbd.ko !] && $DOWNLOAD_FILE  -P $DIR http://10.192.208.75/lars_logs/b59118/images/ls1012ardb/nbd.ko
         # zcat nbd-${hwpack}.ko.gz > nbd.ko
         insmod $DIR/nbd.ko max_part=16
         # mv Image-${hwpack} Image
-        [ ! -e $DIR/kvm-arm64.qcow2 ] && $DOWNLOAD_FILE  -P $DIR http://10.192.208.75/lars_logs/b59118/images/ls1012ardb/kvm-arm64.qcow2
+        [ ! -e '$DIR/kvm-arm64.qcow2' ] && $DOWNLOAD_FILE  -P $DIR http://10.192.208.75/lars_logs/b59118/images/ls1012ardb/kvm-arm64.qcow2
 		tamper_guest $DIR/kvm-arm64.qcow2 aarch64
 
         ;;
