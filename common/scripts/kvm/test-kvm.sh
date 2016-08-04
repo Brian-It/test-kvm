@@ -105,7 +105,7 @@ get_results()
     cat ./${prefix}-guest.log
     umount /mnt
     sync
-    qemu-nbd -d /dev/nbd0
+    #qemu-nbd -d /dev/nbd0
 }
 
 deadline() {
