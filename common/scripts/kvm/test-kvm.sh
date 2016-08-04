@@ -67,10 +67,10 @@ EOF
     chmod a+x /mnt/usr/bin/test-guest.sh
 
     umount /mnt
-    # mount /dev/nbd0p1 /mnt/
+    mount /dev/nbd0p1 /mnt/
     case $prefix in
         aarch64)
-            cp Image /mnt
+            cp /boot/Image /mnt
             echo 'FS0:\Image root=/dev/vda2 rw rootwait mem=384M earlyprintk=pl011,0x9000000 console=ttyAMA0,38400n8' > /mnt/startup.nsh
             ;;
         armv7l)
@@ -88,7 +88,7 @@ get_results()
 {
     guest=$1
     prefix=$2
-    qemu-nbd -c /dev/nbd0 $guest
+    # qemu-nbd -c /dev/nbd0 $guest
     sleep 2
     mount /dev/nbd0p2 /mnt/
 
@@ -204,24 +204,24 @@ esac
 
 echo 0 2000000 > /proc/sys/net/ipv4/ping_group_range
 
-tamper_guest kvm-armhf.qcow2 armv7l
+# tamper_guest kvm-armhf.qcow2 armv7l
 
-if ! grep -q root=/dev/nfs /proc/cmdline
-then
-        echo "setting up and testing networking bridge for guest"
-        brctl addbr br0
-        tunctl -u root
-        ifconfig eth0 0.0.0.0 up
-        ifconfig tap0 0.0.0.0 up
-        brctl addif br0 eth0
-        brctl addif br0 tap0
-        udhcpc -t 10 -i br0
-        netparams="-device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=no,downscript=no,ifname=tap0"
-else
-        netparams="-netdev user,id=user0 -device virtio-net-device,netdev=user0"
-fi
-
-ping -W 4 -c 10 10.0.0.1 && echo "$KVM_HOST_NET 0 pc pass" || echo "$KVM_HOST_NET 0 pc fail"
+# if ! grep -q root=/dev/nfs /proc/cmdline
+# then
+        # echo "setting up and testing networking bridge for guest"
+        # brctl addbr br0
+        # tunctl -u root
+        # ifconfig eth0 0.0.0.0 up
+        # ifconfig tap0 0.0.0.0 up
+        # brctl addif br0 eth0
+        # brctl addif br0 tap0
+        # udhcpc -t 10 -i br0
+        # netparams="-device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=no,downscript=no,ifname=tap0"
+# else
+        # netparams="-netdev user,id=user0 -device virtio-net-device,netdev=user0"
+# fi
+netparams=" -serial tcp::4446,server,telnet "
+# ping -W 4 -c 10 10.0.0.1 && echo "$KVM_HOST_NET 0 pc pass" || echo "$KVM_HOST_NET 0 pc fail"
 
 case ${ARCH} in
     armv7l)
@@ -237,35 +237,42 @@ case ${ARCH} in
         ;;
     aarch64)
         # handle big.LITTLE
-        hwloc-ls
-        case ${hwpack} in
-            juno)
+        # hwloc-ls
+        # case ${hwpack} in
+            # juno)
                 # run on a53 cluster
-                echo run on a53
-                bind="hwloc-bind socket:0"
-                ;;
-            *)
-                bind=""
-                ;;
-        esac
+                # echo run on a53
+                # bind="hwloc-bind socket:0"
+                # ;;
+            # *)
+                # bind=""
+                # ;;
+        # esac
         deadline 120 qemu-system-aarch64 &
         qemu-system-aarch64 --version
         echo "64bit guest test"
-        $bind qemu-system-aarch64 -smp 2 -m 1024 -cpu host -M virt \
-        -bios QEMU_EFI.fd \
-        -device virtio-blk-device,drive=image \
-        -drive if=none,id=image,file=kvm-arm64.qcow2 \
-        $netparams \
-        -nographic -enable-kvm 2>&1|tee kvm-arm64.log
-        echo "32bit guest test"
-        $bind qemu-system-aarch64 -smp 2 -m 1024 -cpu host,aarch64=off -M virt \
-        -kernel ./zImage-vexpress \
-        -append 'root=/dev/vda2 rw rootwait mem=1024M console=ttyAMA0,38400n8' \
-        -device virtio-blk-device,drive=image \
-        -drive if=none,id=image,file=kvm-armhf.qcow2 \
-        $netparams \
-        -nographic -enable-kvm 2>&1|tee kvm-arm32.log
-        get_results kvm-arm64.qcow2 aarch64
+		
+		qemu-system-aarch64 -enable-kvm -m 384 -nographic -cpu host -machine type=virt -kernel /boot/Image \
+		$netparams \
+		-append 'root=/dev/vda2 rw rootwait mem=384M console=ttyAMA0,38400n8' \
+        -drive if=none,id=image,file=$DIR/kvm-arm64.qcow2 \
+        -device virtio-blk-device,drive=image 2>&1|tee kvm-arm64.log
+
+        # qemu-system-aarch64 -smp 2 -m 1024 -cpu host -M virt \
+        # -bios QEMU_EFI.fd \
+        # -device virtio-blk-device,drive=image \
+        # -drive if=none,id=image,file=kvm-arm64.qcow2 \
+        # $netparams \
+        # -nographic -enable-kvm 2>&1|tee kvm-arm64.log
+        # echo "32bit guest test"
+        # $bind qemu-system-aarch64 -smp 2 -m 1024 -cpu host,aarch64=off -M virt \
+        # -kernel ./zImage-vexpress \
+        # -append 'root=/dev/vda2 rw rootwait mem=1024M console=ttyAMA0,38400n8' \
+        # -device virtio-blk-device,drive=image \
+        # -drive if=none,id=image,file=kvm-armhf.qcow2 \
+        # $netparams \
+        # -nographic -enable-kvm 2>&1|tee kvm-arm32.log
+        get_results $DIR/kvm-arm64.qcow2 aarch64
         ;;
     *)
         echo unknown arch ${ARCH}
@@ -273,7 +280,7 @@ case ${ARCH} in
         ;;
 esac
 
-get_results kvm-armhf.qcow2 armv7l
+# get_results kvm-armhf.qcow2 armv7l
 
 ls *log *txt
 rm -f md5sum.txt
