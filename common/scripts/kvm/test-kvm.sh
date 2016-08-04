@@ -251,7 +251,7 @@ case ${ARCH} in
                 # bind=""
                 # ;;
         # esac
-        deadline 60 qemu-system-aarch64 &
+        deadline 1 qemu-system-aarch64 &
         qemu-system-aarch64 --version
         echo "64bit guest test"
 		
