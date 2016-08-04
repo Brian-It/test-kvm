@@ -224,7 +224,7 @@ echo 0 2000000 > /proc/sys/net/ipv4/ping_group_range
 # else
 netparams="-netdev user,id=user0 -device virtio-net-device,netdev=user0"
 # fi
-# netparams=" -serial tcp::4446,server,telnet "
+netparams=" -serial tcp::4446,server,telnet "
 # ping -W 4 -c 10 10.0.0.1 && echo "$KVM_HOST_NET 0 pc pass" || echo "$KVM_HOST_NET 0 pc fail"
 
 case ${ARCH} in
@@ -256,11 +256,12 @@ case ${ARCH} in
         qemu-system-aarch64 --version
         echo "64bit guest test"
 		
-		qemu-system-aarch64 -enable-kvm -m 384 -nographic -cpu host -machine type=virt -kernel /boot/Image \
-		$netparams \
-		-append 'root=/dev/vda2 rw rootwait mem=384M console=ttyAMA0,38400n8' \
-        -drive if=none,id=image,file=$DIR/kvm-arm64.qcow2 \
-        -device virtio-blk-device,drive=image 2>&1|tee kvm-arm64.log  &
+		# qemu-system-aarch64 -enable-kvm -m 384 -nographic -cpu host -machine type=virt -kernel /boot/Image \
+		# $netparams \
+		# -append 'root=/dev/vda2 rw rootwait mem=384M console=ttyAMA0,38400n8' \
+        # -drive if=none,id=image,file=$DIR/kvm-arm64.qcow2 \
+        # -device virtio-blk-device,drive=image 2>&1|tee kvm-arm64.log  &
+		
 
         # qemu-system-aarch64 -smp 2 -m 1024 -cpu host -M virt \
         # -bios QEMU_EFI.fd \
