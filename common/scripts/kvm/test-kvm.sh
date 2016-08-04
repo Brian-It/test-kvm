@@ -97,6 +97,9 @@ get_results()
         echo "${prefix}-${KVM_BOOT} 0 pc fail"
     fi
     echo ${prefix}-guest logs:
+	echo "*****"
+	ls /mnt/*.txt
+	echo "*****"
     cp /mnt/*.txt .
     cp /mnt/root/guest.log ./${prefix}-guest.log
     cat ./${prefix}-guest.log
@@ -248,7 +251,7 @@ case ${ARCH} in
                 # bind=""
                 # ;;
         # esac
-        deadline 120 qemu-system-aarch64 &
+        deadline 60 qemu-system-aarch64 &
         qemu-system-aarch64 --version
         echo "64bit guest test"
 		
@@ -286,3 +289,5 @@ esac
 
 ls *log *txt
 rm -f md5sum.txt
+
+echo "test-kvm stop"
