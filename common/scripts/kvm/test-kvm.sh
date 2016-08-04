@@ -35,14 +35,15 @@ tamper_guest()
     sleep 2
     mount /dev/nbd0p2 /mnt/
 
-    if [ -x /mnt/lib/systemd/systemd ]
-    then
-        cp common/scripts/kvm/kvm-lava.service /mnt/etc/systemd/system/kvm-lava.service
-        chroot /mnt systemctl enable kvm-lava.service
-    else
-        cp common/scripts/kvm/kvm-lava.conf  /mnt/etc/init/kvm-lava.conf
-    fi
-
+    # if [ -x /mnt/lib/systemd/systemd ]
+    # then
+        # cp common/scripts/kvm/kvm-lava.service /mnt/etc/systemd/system/kvm-lava.service
+        # chroot /mnt systemctl enable kvm-lava.service
+    # else
+        # cp common/scripts/kvm/kvm-lava.conf  /mnt/etc/init/kvm-lava.conf
+    # fi
+    cp common/scripts/kvm/kvm-lava.conf  /mnt/etc/init/kvm-lava.conf
+	
     # Build up file test-guest.sh
     if [ "x$1" = "xbenchmark" ]; then
         cp /usr/bin/lat_ctx /mnt/usr/bin/lat_ctx
