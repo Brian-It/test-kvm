@@ -46,10 +46,12 @@ tamper_guest()
 	
     # Build up file test-guest.sh
     if [ "x$1" = "xbenchmark" ]; then
+	    echo '***benchmark'
         cp /usr/bin/lat_ctx /mnt/usr/bin/lat_ctx
         cp common/scripts/lmbench.sh /mnt/root/lmbench.sh
         TEST_SCRIPT=/root/lmbench.sh
     else
+	    echo "***hackbench"
         cp hackbench-${prefix} /mnt/usr/bin/hackbench
         cp common/scripts/kvm/test-rt-tests.sh /mnt/root/test-rt-tests.sh
         TEST_SCRIPT="/root/test-rt-tests.sh ${prefix}-guest"
