@@ -45,7 +45,7 @@ tamper_guest()
     cp common/scripts/kvm/kvm-lava.conf  /mnt/etc/init/kvm-lava.conf
 	
     # Build up file test-guest.sh
-    if [ "x$1" = "xbenchmark" ]; then
+    if [ "x$3" = "xbenchmark" ]; then
 	    echo '***benchmark'
         cp /usr/bin/lat_ctx /mnt/usr/bin/lat_ctx
         cp common/scripts/lmbench.sh /mnt/root/lmbench.sh
@@ -136,7 +136,7 @@ if [ "x$1" = "xbenchmark" ]; then
     KVM_INIT="$KVM_INIT 0 none"
     KVM_BOOT="$KVM_BOOT 0 none"
 fi
-
+BENCH=$1
 ARCH=`uname -m`
 
 [ -c /dev/kvm ] && echo "$KVM_INIT 0 pc pass" || \
@@ -192,7 +192,7 @@ case ${ARCH} in
 		then 
 		$DOWNLOAD_FILE  -P $DIR http://10.192.208.75/lars_logs/b59118/images/ls1012ardb/kvm-arm64.qcow2
         fi
-		tamper_guest $DIR/kvm-arm64.qcow2 aarch64
+		tamper_guest $DIR/kvm-arm64.qcow2 aarch64 $BENCH
 
         ;;
     *)
