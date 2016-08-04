@@ -255,11 +255,11 @@ case ${ARCH} in
         qemu-system-aarch64 --version
         echo "64bit guest test"
 		
-		qemu-system-aarch64 -enable-kvm -m 384 -nographic -cpu host -machine type=virt -kernel /boot/Image \
-		$netparams \
-		-append 'root=/dev/vda2 rw rootwait mem=384M console=ttyAMA0,38400n8' \
-        -drive if=none,id=image,file=$DIR/kvm-arm64.qcow2 \
-        -device virtio-blk-device,drive=image 2>&1|tee kvm-arm64.log  &
+		# qemu-system-aarch64 -enable-kvm -m 384 -nographic -cpu host -machine type=virt -kernel /boot/Image \
+		# $netparams \
+		# -append 'root=/dev/vda2 rw rootwait mem=384M console=ttyAMA0,38400n8' \
+        # -drive if=none,id=image,file=$DIR/kvm-arm64.qcow2 \
+        # -device virtio-blk-device,drive=image 2>&1|tee kvm-arm64.log  &
 
         # qemu-system-aarch64 -smp 2 -m 1024 -cpu host -M virt \
         # -bios QEMU_EFI.fd \
